@@ -3,6 +3,11 @@ Repository for running 3460:426 Operating Systems Project
 
 # Summary
 This is a small 16 bit operating system based on the work of M. Black
+Following the procedure in the lab, I have created basic kernel functionality.
+The kernel changes the terminal display colors to a grey background with blue text.
+The system is capable of correctly reading and writing both strings and integers ( 
+up to MAX_INT which in this case is 32767) using system interrupts. Descriptions
+of each function are commented above them in kernel.c.
 
 # Use
 To run this program you will need to build it from these source files and run it. 
