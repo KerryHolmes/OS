@@ -58,6 +58,9 @@ void main()
     while(1);
 }
 
+/*This function will output a string onto the screen. 
+The string is passed in as a character array and printed
+to the screen using interrupt 16 and function 14*/
 void printString(char* c)
 {
     int i;
@@ -66,6 +69,12 @@ void printString(char* c)
     return;
 }
 
+/*readString takes a character array with at least 80 elements but nothing in them. 
+It calls interrupt 22 repeatedly and save the results in successive elements of the 
+character array until the ENTER key is pressed (ASCII 13 or 0xD). It then adds 0x0 
+(end of string) as the last character in the array and returns. Every character is
+printed to the screen after being typed. If the BACKSPACE key is pressed, it is not
+stored, but the current position in the character array is moved backwards.*/
 void readString(char* c)
 {
     int i = 0;
@@ -93,7 +102,11 @@ void readString(char* c)
     }
     return;
 }
-
+/*This function will issue 24 carriage return/newline 
+combinations; issue the command interrupt(16,512,0,0,0);
+Finally if both bx and cx are bigger than zero execute
+interrupt(16, 1536, 4096 * (bx – 1) + 256 * (cx – 1), 0, 6223)
+which will change the terminal color based on bx and cx values*/
 void clearScreen(int bx, int cx)
 {
     int i;
@@ -105,6 +118,9 @@ void clearScreen(int bx, int cx)
     return;
 }
 
+/*These three functions were provided by Doctor Oneil and
+serve to implement modulus, division, and writing characters
+to the console screen.*/
 int mod(int a, int b)
 {
     int x = a;
@@ -141,6 +157,11 @@ void writeInt(int x)
     printString(d);
 }
 
+/* This function reads a number as a character string, from
+left to right and converts the ASCII characters for each individual
+digit to the corresponding numeric value, correctly weights
+each value and add them into a running sum. Then stores the sum at
+the address provided as an argument. */
 void readInt(int* number)
 {
     char* input;
@@ -156,6 +177,12 @@ void readInt(int* number)
     return;
 }
 
+/*This handler takes in arguments for ax, bx, cx, and dx
+then it switches on the function defined by ax and executes 
+the corresponding function. 0 prints a string, 1 reads a 
+string in, 12 clears the screen, 13 writes and integer 
+and 14 reads an integer. This is accomplished by calling the 
+functions defined above.*/
 void handleInterrupt21(int ax, int bx, int cx, int dx)
 {
     switch(ax)
