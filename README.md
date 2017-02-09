@@ -12,6 +12,11 @@ of each function are commented above them in kernel.c.
 # Use
 To run this program you will need to build it from these source files and run it. 
 To build the OS image you can run the compile script compileOS.sh from a terminal.
+If you are unable to run the script you will need to run the following command to 
+make it executable.
+'''
+chmod +x compileOS.sh
+'''
 *Note this requires you to have Bruce Evan's C Compiler (bcc).*
 EX:
 ```
