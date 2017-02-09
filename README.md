@@ -18,11 +18,13 @@ make it executable.
 chmod +x compileOS.sh
 ```
 *Note this requires you to have Bruce Evan's C Compiler (bcc).*
+
 EX:
 ```
 ./compileOS.sh
 ```
 Then you can run the image from the bochs emulator
+
 EX:
 ```
 bochs -f osxterm.txt
