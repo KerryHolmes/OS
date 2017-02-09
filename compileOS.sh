@@ -4,7 +4,6 @@ dd if=/dev/zero of=floppya.img bs=512 count=2880
 
 #This will compile the bootloader and write the
 #compiled bootloader into the floppy disk image
-nasm bootload.asm
 dd if=bootload of=floppya.img bs=512 count=1 conv=notrunc
 
 #This will compile the kernel code using bruce's c compiler
