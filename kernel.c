@@ -226,7 +226,23 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     case 1:
         readString(bx);
         break;
-        
+    
+    case 2:
+	readSector(bx,cx);
+	break;    
+    
+    case 3:
+	readFile(bx,cx,dx);
+	break;
+
+    case 4:
+	runProgram(bx,cx);
+	break;
+
+    case 5:
+	stop();
+	break;
+
     case 12:
         clearScreen(bx,cx);
         break;
@@ -238,6 +254,10 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     case 14:
         readInt(bx);
         break;
+    
+    case 15:
+	error(bx);
+	break;
         
     default:
         printString(" Error you did not enter a correct value for AX");
