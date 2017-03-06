@@ -28,8 +28,7 @@ void handleInterrupt21(int,int,int,int);
 
 void main()
 {
-    char line[80];
-    int x;
+    char buffer[512];
     
     makeInterrupt21();
     interrupt(33,12,8,10,0);
@@ -43,18 +42,9 @@ void main()
     interrupt(33,0," V. 1.03, C. 2017. Based on a project by M. Black. \r\n\0",0,0);
     interrupt(33,0," Author(s): Kerry Holmes\r\n\r\n\0",0,0);
     
-    interrupt(33,0,"Hola mondo.\r\n\0",0,0);
-    interrupt(33,0,"Enter a line: \0",0,0);
-    interrupt(33,1,line,0,0);
-    interrupt(33,0,"\r\nYou typed: \0",0,0);
-    interrupt(33,0,line,0,0);
-    interrupt(33,0,"\r\n\0",0,0);
-    interrupt(33,0,"Enter a number: \0",0,0);
-    interrupt(33,14,&x,0,0);
-    interrupt(33,0,"\r\n\0",0,0);
-    interrupt(33,0,"You entered \0",0,0);
-    interrupt(33,13,x,0,0);
-    interrupt(33,0,"\r\n\0",0,0);
+    interrupt(33,2,buffer,30,0);
+    interrupt(33,0,buffer,0,0);    
+
     while(1);
 }
 
@@ -209,6 +199,15 @@ void error(int bx)
    }
 }
 
+void readSector(char* buffer, int sector)
+{
+    int relSecNo = mod(sector, 18) + 1;
+    int headNo = mod(div(sector, 18), 2);
+    int trackNo = div(sector, 36);
+
+    interrupt(19, 513, buffer, (trackNo * 256) + relSecNo, headNo * 256); 
+}
+
 /*This handler takes in arguments for ax, bx, cx, and dx
 then it switches on the function defined by ax and executes 
 the corresponding function. 0 prints a string, 1 reads a 
@@ -230,7 +229,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     case 2:
 	readSector(bx,cx);
 	break;    
-    
+    /*
     case 3:
 	readFile(bx,cx,dx);
 	break;
@@ -242,7 +241,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     case 5:
 	stop();
 	break;
-
+*/
     case 12:
         clearScreen(bx,cx);
         break;
