@@ -208,6 +208,11 @@ void readSector(char* buffer, int sector)
     interrupt(19, 513, buffer, (trackNo * 256) + relSecNo, headNo * 256); 
 }
 
+void readFile()
+{
+
+}
+
 /*This handler takes in arguments for ax, bx, cx, and dx
 then it switches on the function defined by ax and executes 
 the corresponding function. 0 prints a string, 1 reads a 
@@ -229,11 +234,11 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     case 2:
 	readSector(bx,cx);
 	break;    
-    /*
+    
     case 3:
 	readFile(bx,cx,dx);
 	break;
-
+/*
     case 4:
 	runProgram(bx,cx);
 	break;
