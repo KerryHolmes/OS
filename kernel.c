@@ -28,8 +28,8 @@ void handleInterrupt21(int,int,int,int);
 
 void main()
 {
-    char buffer[512];
-    
+    char buffer[13312];
+    int size;
     makeInterrupt21();
     interrupt(33,12,8,10,0);
     
@@ -42,9 +42,9 @@ void main()
     interrupt(33,0," V. 1.03, C. 2017. Based on a project by M. Black. \r\n\0",0,0);
     interrupt(33,0," Author(s): Kerry Holmes\r\n\r\n\0",0,0);
     
-    interrupt(33,2,buffer,30,0);
-    interrupt(33,0,buffer,0,0);    
-
+    interrupt(33,4,"test2\0",2,0);
+    interrupt(33,0,"Error if this executes\r\n\0",0,0);
+     
     while(1);
 }
 
@@ -211,11 +211,14 @@ void readSector(char* buffer, int sector)
 int lex_compare(char* original, char* compare)
 {
     int i = 0;
-    for(i = 0; i < sizeof(original); ++i)
+    for(i = 0; i < 6; ++i)
     {
+        if(*(original + i) == 0 && *(compare + i) == 0)
+            return 1;
 	if(*(original + i) != *(compare + i))
 	    return 0;
     }
+    
     return 1;
 }
 
@@ -233,13 +236,13 @@ void readFile(char* fname, char* buffer, int* size)
 	    {
                 int j;
                 char* position = buffer;
-		size = 0;
+		*size = 0;
                 for(j = 6; j < 31; ++j)
                 {
-                    if(*position == 0)
+                    if(*directory+j+i*32 == 0)
                         return;
-                    readSector(position, *(directory + j + i * 32));
-		    size++;
+                    readSector(position,*(directory + j + i * 32));
+		    *size += 1;
                     position += 512;
                 }
                 return;    
@@ -253,7 +256,7 @@ void runProgram(char* name, int segment)
 {
     char buffer[13312];
     int size, real_segment, i;
-    readFile(name, buffer, size);
+    readFile(name, buffer, &size);
     real_segment = segment * 4096;
     for(i = 0; i < size*512; i++)
     {
