@@ -208,9 +208,45 @@ void readSector(char* buffer, int sector)
     interrupt(19, 513, buffer, (trackNo * 256) + relSecNo, headNo * 256); 
 }
 
-void readFile()
+int lex_compare(char* original, char* compare)
 {
+    int i = 0;
+    for(i = 0; i < sizeof(original); ++i)
+    {
+	if(*(original + i) != *(compare + i))
+	    return 0;
+    }
+    return 1;
+}
 
+void readFile(char* fname, char* buffer, int* size)
+{
+    char directory[512];
+    int i;
+    readSector(directory, 2);
+
+    for(i = 0; i < 16; ++i)
+    {
+        if(*(directory + i * 32) != 0x0)
+	{
+            if(lex_compare(fname, (directory + i * 32)))
+	    {
+                int j;
+                char* position = buffer;
+		size = 0;
+                for(j = 6; j < 31; ++j)
+                {
+                    if(*position == 0)
+                        return;
+                    readSector(position, *(directory + j + i * 32));
+		    size++;
+                    position += 512;
+                }
+                return;    
+            }    
+        }
+    }
+    error(1);
 }
 
 /*This handler takes in arguments for ax, bx, cx, and dx

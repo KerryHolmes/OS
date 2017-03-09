@@ -10,7 +10,6 @@ dd if=bootload of=floppya.img bs=512 count=1 conv=notrunc
 #on the disk
 dd if=map.img of=floppy.img bs=512 count=1 seek=1 conv=notrunc
 dd if=dir.img of=floppya.img bs=512 count=1 seek=2 conv=notrunc
-dd if=msg of=floppya.img bs=512 count=1 seek=30 conv=notrunc
 
 #This will compile the kernel code using bruce's c compiler
 bcc -ansi -c -o kernel.o kernel.c 
