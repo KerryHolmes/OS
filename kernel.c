@@ -19,7 +19,7 @@
 /*                                                                        */
 /*                                                                        */
 /*                                                                        */
-/* Signed:____Kerry Holmes_____________________ Date:___02/04/2017___     */
+/* Signed:____Kerry Holmes & Samuel Goodrick___ Date:___02/04/2017___     */
 /*                                                                        */
 /*                                                                        */
 /* 3460:4/526 BlackDOS kernel, Version 1.03, Spring 2017.                 */
@@ -42,7 +42,7 @@ void main()
     interrupt(33,0," V. 1.03, C. 2017. Based on a project by M. Black. \r\n\0",0,0);
     interrupt(33,0," Author(s): Kerry Holmes\r\n\r\n\0",0,0);
     
-    interrupt(33,4,"test2\0",2,0);
+    interrupt(33,4,"cal\0",2,0);
     interrupt(33,0,"Error if this executes\r\n\0",0,0);
      
     while(1);

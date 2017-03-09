@@ -1,11 +1,29 @@
+#compile the loadFile utility
+gcc -o loadFile loadFile.c
+
+#Erase the disk
 dd if=/dev/zero of=floppya.img bs=512 count=2880
+
 #These statements add the precompiled data to different sectors
 #on the disk
 dd if=map.img of=floppya.img bs=512 count=1 seek=1 conv=notrunc
 dd if=dir.img of=floppya.img bs=512 count=1 seek=2 conv=notrunc
+
+#Add precompiled tests to the disk
 ./loadFile msg
 ./loadFile test1
 ./loadFile test2
+
+#Compile and add fib and calc programs
+bcc -ansi -c -o fib.o fib.c
+as86 lib.asm  -o lib_asm.o
+ld86 -o fib -d fib.o lib_asm.o
+./loadFile fib
+
+bcc -ansi -c -o cal.o cal.c
+ld86 -o cal -d cal.o lib_asm.o 
+./loadFile cal
+
 #This will compile the bootloader and write the
 #compiled bootloader into the floppy disk image
 dd if=bootload of=floppya.img bs=512 count=1 conv=notrunc
