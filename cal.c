@@ -9,7 +9,7 @@ void main()
    mo = -1;
    while (mo < 1 || mo > 12)
    {
-      PRINTS("Enter desired month: \0");
+      PRINTS("Enter desired month:\0");
       SCANN(mo);
    }
    PRINTS("Enter desired year: \0");
