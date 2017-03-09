@@ -249,6 +249,21 @@ void readFile(char* fname, char* buffer, int* size)
     error(1);
 }
 
+void runProgram(char* name, int segment)
+{
+    char buffer[13312];
+    int size, real_segment, i;
+    readFile(name, buffer, size);
+    real_segment = segment * 4096;
+    for(i = 0; i < size*512; i++)
+    {
+        putInMemory(real_segment, i, *(buffer + i));
+    }
+    launchProgram(real_segment);
+}
+
+void stop() { while(1); }
+
 /*This handler takes in arguments for ax, bx, cx, and dx
 then it switches on the function defined by ax and executes 
 the corresponding function. 0 prints a string, 1 reads a 
@@ -274,7 +289,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     case 3:
 	readFile(bx,cx,dx);
 	break;
-/*
+
     case 4:
 	runProgram(bx,cx);
 	break;
@@ -282,7 +297,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     case 5:
 	stop();
 	break;
-*/
+
     case 12:
         clearScreen(bx,cx);
         break;
