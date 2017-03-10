@@ -42,7 +42,7 @@ void main()
     interrupt(33,0," V. 1.03, C. 2017. Based on a project by M. Black. \r\n\0",0,0);
     interrupt(33,0," Author(s): Kerry Holmes\r\n\r\n\0",0,0);
     
-    interrupt(33,4,"cal\0",2,0);
+    interrupt(33,4,"fib\0",2,0);
     interrupt(33,0,"Error if this executes\r\n\0",0,0);
      
     while(1);
@@ -167,6 +167,7 @@ void readInt(int* number)
     return;
 }
 
+/*This is the error function that was provided by Dr. Oneil*/
 void error(int bx)
 {
    char errMsg0[18], errMsg1[17], errMsg2[13], errMsg3[17];
@@ -199,6 +200,9 @@ void error(int bx)
    }
 }
 
+/*This function reads in a specified sector from memory into a provided 
+buffer. Modulus and division are used to translate the sector to its actual location.
+Interrupt 19 is called to transfer the data.*/
 void readSector(char* buffer, int sector)
 {
     int relSecNo = mod(sector, 18) + 1;
@@ -208,6 +212,10 @@ void readSector(char* buffer, int sector)
     interrupt(19, 513, buffer, (trackNo * 256) + relSecNo, headNo * 256); 
 }
 
+/*This helper function for read file compares two strings,
+passed as char arrays. The strings can be a maximum of 6 characters
+due to limitations on our file system. The function returns 1 if the
+strings are the same and 0 if they are not.*/
 int lex_compare(char* original, char* compare)
 {
     int i = 0;
@@ -222,6 +230,12 @@ int lex_compare(char* original, char* compare)
     return 1;
 }
 
+/*This function reads a file into a buffer. The function requires 
+a filename, a buffer and a size. The file is found in the directory
+using the lex compare function above. After it is found, the file
+is loaded from the specified sectors into the buffer, by repeatedly
+calling the read Sector function. If the file is not found an 
+error is returned.*/
 void readFile(char* fname, char* buffer, int* size)
 {
     char directory[512];
@@ -252,6 +266,9 @@ void readFile(char* fname, char* buffer, int* size)
     error(1);
 }
 
+/*This function runs a program with the name specified as an argument.
+It uses the readFile program above to load the program, and then uses
+putInMemory and launchProgram to initiate it.*/
 void runProgram(char* name, int segment)
 {
     char buffer[13312];
@@ -265,6 +282,7 @@ void runProgram(char* name, int segment)
     launchProgram(real_segment);
 }
 
+/*This function was provided by Dr. Oneil.*/
 void stop() { while(1); }
 
 /*This handler takes in arguments for ax, bx, cx, and dx
