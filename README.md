@@ -17,8 +17,9 @@ in length and integers ( up to MAX_INT which in this case is 32767) using system
 interrupts. Descriptions of each function are commented above them in kernel.c. 
 You can verify this functionality by running the commands below. You will then be prompted
 to enter the name of a test program to run. The programs loaded are test1, test2, cal, 
-and fib. Each of the prgrams hangs the OS after execution so you will need to quit and
-run again to enter another program. The test programs are provided curtesy of Dr. Oneil.
+msg, and fib. Each of the prgrams hangs the OS after execution so you will need to quit and
+run again to enter another program. You will receive errors if you do not correctly enter
+one of the file names above. The test programs are provided curtesy of Dr. Oneil.
 
 # Use
 To run this program you will need to build it from these source files and run it. 
