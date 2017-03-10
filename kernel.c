@@ -43,6 +43,13 @@ void main()
     interrupt(33,0," V. 1.03, C. 2017. Based on a project by M. Black. \r\n\0",0,0);
     interrupt(33,0," Author(s): Kerry Holmes & Sam Goodrick\r\n\r\n\0",0,0);
     
+    /*Uncomment the two lines bekow this to see the contents of msg
+      printed onto the screen.*/    
+    /*         
+    interrupt(33,3,"msg\0",buffer,&size);
+    interrupt(33,0,buffer,0,0);  
+     */
+
     /*Get test program from the user*/
     interrupt(33,0,"Enter a file name (Max 6 characters): \0",0,0);
     interrupt(33,1, file, 0, 0);
@@ -275,12 +282,15 @@ void readFile(char* fname, char* buffer, int* size)
 
 /*This function runs a program with the name specified as an argument.
 It uses the readFile program above to load the program, and then uses
-putInMemory and launchProgram to initiate it.*/
+putInMemory and launchProgram to initiate it. If readFile does not find
+the program the function exits before writing to memory, and does nothing.*/
 void runProgram(char* name, int segment)
 {
     char buffer[13312];
     int size, real_segment, i;
     readFile(name, buffer, &size);
+    if(*buffer == 0)
+      return;
     real_segment = segment * 4096;
     for(i = 0; i < size*512; i++)
     {
