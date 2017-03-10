@@ -28,6 +28,7 @@ void handleInterrupt21(int,int,int,int);
 
 void main()
 {
+    char file[6];
     char buffer[13312];
     int size;
     makeInterrupt21();
@@ -40,9 +41,15 @@ void main()
     interrupt(33,0," |___  /____(____  /\\___  >__|_ \\____ |\\___/____  >\r\n\0",0,0);
     interrupt(33,0,"     \\/          \\/     \\/     \\/    \\/         \\/ \r\n\0",0,0);
     interrupt(33,0," V. 1.03, C. 2017. Based on a project by M. Black. \r\n\0",0,0);
-    interrupt(33,0," Author(s): Kerry Holmes\r\n\r\n\0",0,0);
+    interrupt(33,0," Author(s): Kerry Holmes & Sam Goodrick\r\n\r\n\0",0,0);
     
-    interrupt(33,4,"fib\0",2,0);
+    /*Get test program from the user*/
+    interrupt(33,0,"Enter a file name (Max 6 characters): \0",0,0);
+    interrupt(33,1, file, 0, 0);
+    interrupt(33,0,"\r\n\0",0,0);
+    
+    /*Run the program.*/
+    interrupt(33,4,file,2,0);
     interrupt(33,0,"Error if this executes\r\n\0",0,0);
      
     while(1);
