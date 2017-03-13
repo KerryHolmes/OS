@@ -243,6 +243,23 @@ int lex_compare(char* original, char* compare)
     
     return 1;
 }
+/*Searches the directory passed in for a file name and returns the
+index of the file.*/
+int locate_file(char* directory, char* name)
+{
+    int i;
+    for(i = 0; i < 16; ++i)
+    {
+       if(*(directory + i * 32) != 0x0)
+       {
+           if(lex_compare(name, (directory + i * 32)))
+           {
+               return (directory + i * 32);
+           }
+       }
+    }
+    return 0;
+}
 
 /*This function reads a file into a buffer. The function requires 
 a filename, a buffer and a size. The file is found in the directory
@@ -253,30 +270,24 @@ error is returned.*/
 void readFile(char* fname, char* buffer, int* size)
 {
     char directory[512];
-    int i;
+    int j;
+    char* position = buffer;
+    char* file;
     readSector(directory, 2);
-
-    for(i = 0; i < 16; ++i)
+    file = locate_file(directory,fname);
+    if(file)
     {
-        if(*(directory + i * 32) != 0x0)
-	{
-            if(lex_compare(fname, (directory + i * 32)))
-	    {
-                int j;
-                char* position = buffer;
-		*size = 0;
-                for(j = 6; j < 31; ++j)
-                {
-                    if(*directory+j+i*32 == 0)
-                        return;
-                    readSector(position,*(directory + j + i * 32));
-		    *size += 1;
-                    position += 512;
-                }
-                return;    
-            }    
+        *size = 0;
+        for(j = 6; j < 31; ++j)
+        {
+            if(*(file+j) == 0)
+                return;
+            readSector(position,*(file + j));
+            *size += 1;
+            position += 512;
         }
-    }
+        return;    
+     }    
     error(1);
 }
 
@@ -301,6 +312,21 @@ void runProgram(char* name, int segment)
 
 /*This function was provided by Dr. Oneil.*/
 void stop() { while(1); }
+
+/**/
+void writeSector(char* buffer, int sector)
+{
+    int relSecNo = mod(sector, 18) + 1;
+    int headNo = mod(div(sector, 18), 2);
+    int trackNo = div(sector, 36);
+    
+    interrupt(19, 769, buffer, (trackNo * 256) + relSecNo, headNo * 256);
+}
+
+void deleteFile(char* name)
+{
+    
+}
 
 /*This handler takes in arguments for ax, bx, cx, and dx
 then it switches on the function defined by ax and executes 
@@ -335,7 +361,23 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     case 5:
 	stop();
 	break;
+    
+    case 6:
+        writeSector(bx,cx);
+        break;
 
+    case 7:
+        deleteFile(bx);
+        break;
+/*
+    case 8:
+        writeFile(bx,cx,dx);
+        break;
+
+    case 11:
+        interrupt(25,0,0,0,0);
+        break;
+*/
     case 12:
         clearScreen(bx,cx);
         break;
