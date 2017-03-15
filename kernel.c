@@ -53,7 +53,7 @@ void main()
     interrupt(33,1, file, 0, 0);
     interrupt(33,0,"\r\n\0",0,0);
     
-    interrupt( 33, 7, file, 0, 0 ) 
+    interrupt( 33, 7, file, 0, 0 );
     /* Run the program. */
     interrupt(33,4,file,2,0);
     interrupt(33,0,"Error if this executes\r\n\0",0,0);
@@ -349,11 +349,10 @@ void deleteFile(char* name)
 	    /* if we have reached an empty or deleted sector, return */
             if(*(file+j) == 0)
                 return;
-            readSector(position,*(file + j));
+            readSector(directory,*(file + j));
 
 	    /* remove the first bit of each relevant sector */
 	    *file = 0;
-            position += 512;
         }
         return;    
     }    
