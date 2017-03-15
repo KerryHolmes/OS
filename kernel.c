@@ -45,9 +45,9 @@ void main()
     
     /*Uncomment the two lines bekow this to see the contents of msg
       printed onto the screen.*/    
-    interrupt(33,3,"msg\0",buffer,&size);
+/*    interrupt(33,3,"msg\0",buffer,&size);
     interrupt(33,0,buffer,0,0);  
-
+*/
     /*Get test program from the user*/
     interrupt(33,0,"Enter a file name (Max 6 characters): \0",0,0);
     interrupt(33,1, file, 0, 0);
@@ -325,7 +325,7 @@ void writeSector(char* buffer, int sector)
 void deleteFile(char* name)
 {
     char map[512];
-    char director[512];
+    char directory[512];
     int fileindex;
     readSector( map, 1 );
     readSector( directory, 2 );
