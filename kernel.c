@@ -53,7 +53,7 @@ void main()
     interrupt(33,1, file, 0, 0);
     interrupt(33,0,"\r\n\0",0,0);
     
-    interrupt( 33, 7, file, 0, 0 );
+    deleteFile( file );
     /* Run the program. */
     interrupt(33,4,file,2,0);
     interrupt(33,0,"Error if this executes\r\n\0",0,0);
@@ -260,6 +260,22 @@ int locate_file(char* directory, char* name)
     return 0;
 }
 
+int file_index(char* directory, char* name)
+{
+    int i;
+    for(i = 0; i < 16; ++i)
+    {
+       if(*(directory + i * 32) != 0x0)
+       {
+           if(lex_compare(name, (directory + i * 32)))
+           {
+	       return i * 32;
+           }
+       }
+    }
+    return 0;    
+}
+
 /*This function reads a file into a buffer. The function requires 
 a filename, a buffer and a size. The file is found in the directory
 using the lex compare function above. After it is found, the file
@@ -327,7 +343,7 @@ void deleteFile(char* name)
     char map[512];
     char directory[512];
     char* file;
-    int j;
+    int j, index;
 
     readSector( map, 1 );
     readSector( directory, 2 );
@@ -346,13 +362,12 @@ void deleteFile(char* name)
 	/* sectors that may belong to the file */
         for(j = 6; j < 31; ++j)
         {
+	    /* remove the corresponding sectors from disk */
+	    map[index] = 0;
 	    /* if we have reached an empty or deleted sector, return */
             if(*(file+j) == 0)
-                return;
-            readSector(directory,*(file + j));
-
-	    /* remove the first bit of each relevant sector */
-	    *file = 0;
+                return;	  
+	    ++index;
         }
         return;    
     }    
