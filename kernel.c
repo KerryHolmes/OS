@@ -45,19 +45,18 @@ void main()
     
     /*Uncomment the two lines bekow this to see the contents of msg
       printed onto the screen.*/    
-    /*         
     interrupt(33,3,"msg\0",buffer,&size);
     interrupt(33,0,buffer,0,0);  
-     */
 
     /*Get test program from the user*/
     interrupt(33,0,"Enter a file name (Max 6 characters): \0",0,0);
     interrupt(33,1, file, 0, 0);
     interrupt(33,0,"\r\n\0",0,0);
     
+    /* interrupt( 33, 7, file, 0, 0 ) */
     /*Run the program.*/
-    interrupt(33,4,file,2,0);
-    interrupt(33,0,"Error if this executes\r\n\0",0,0);
+    /* interrupt(33,4,file,2,0); */
+    /* interrupt(33,0,"Error if this executes\r\n\0",0,0); */
      
     while(1);
 }
@@ -334,11 +333,11 @@ void deleteFile(char* name)
     fileindex = locate_file( directory, name );
     if( !fileindex )
     {
-	interrupt( 33, 0, "Error: File Not Found\n", 0, 0 );	
+	interrupt( 33, 0, "\r\nError: File Not Found\n\0", 0, 0 );	
     }
     else
     {
-	
+	*name = 0;
     }
     
 }
@@ -410,6 +409,6 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 	break;
         
     default:
-        printString(" Error you did not enter a correct value for AX");
+        printString("\rError: Interrupt 33: invalid argument for AX\n\0");
     }
 }
