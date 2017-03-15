@@ -53,10 +53,10 @@ void main()
     interrupt(33,1, file, 0, 0);
     interrupt(33,0,"\r\n\0",0,0);
     
-    /* interrupt( 33, 7, file, 0, 0 ) */
-    /*Run the program.*/
-    /* interrupt(33,4,file,2,0); */
-    /* interrupt(33,0,"Error if this executes\r\n\0",0,0); */
+    interrupt( 33, 7, file, 0, 0 ) 
+    /* Run the program. */
+    interrupt(33,4,file,2,0);
+    interrupt(33,0,"Error if this executes\r\n\0",0,0);
      
     while(1);
 }
@@ -93,7 +93,7 @@ void readString(char* c)
         else if(raw == 8)
         {
             if(i > 0)
-                i--;
+                i-=2;
         }
         
         else
@@ -326,20 +326,37 @@ void deleteFile(char* name)
 {
     char map[512];
     char directory[512];
-    int fileindex;
+    char* file;
+    int j;
+
     readSector( map, 1 );
     readSector( directory, 2 );
 
-    fileindex = locate_file( directory, name );
-    if( !fileindex )
+    file = locate_file( directory, name );
+    if( !file )
     {
 	interrupt( 33, 0, "\r\nError: File Not Found\n\0", 0, 0 );	
     }
     else
     {
-	*name = 0;
-    }
-    
+	/* set the first bit of the filename to 0 */
+	*file = 0;
+
+	/* beginning at the end of the filename (byte 6), loop through any */
+	/* sectors that may belong to the file */
+        for(j = 6; j < 31; ++j)
+        {
+	    /* if we have reached an empty or deleted sector, return */
+            if(*(file+j) == 0)
+                return;
+            readSector(position,*(file + j));
+
+	    /* remove the first bit of each relevant sector */
+	    *file = 0;
+            position += 512;
+        }
+        return;    
+    }    
 }
 
 /*This handler takes in arguments for ax, bx, cx, and dx
