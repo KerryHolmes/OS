@@ -325,6 +325,21 @@ void writeSector(char* buffer, int sector)
 
 void deleteFile(char* name)
 {
+    char map[512];
+    char director[512];
+    int fileindex;
+    readSector( map, 1 );
+    readSector( directory, 2 );
+
+    fileindex = locate_file( directory, name );
+    if( !fileindex )
+    {
+	interrupt( 33, 0, "Error: File Not Found\n", 0, 0 );	
+    }
+    else
+    {
+	
+    }
     
 }
 
