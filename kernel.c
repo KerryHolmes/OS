@@ -53,7 +53,7 @@ void main()
     interrupt(33,1, file, 0, 0);
     interrupt(33,0,"\r\n\0",0,0);
     
-    deleteFile( file );
+    interrupt( 33, 7, file, 0, 0 );
     /* Run the program. */
     interrupt(33,4,file,2,0);
     interrupt(33,0,"Error if this executes\r\n\0",0,0);
@@ -269,7 +269,7 @@ int file_index(char* directory, char* name)
        {
            if(lex_compare(name, (directory + i * 32)))
            {
-	       return i * 32;
+	       return i;
            }
        }
     }
@@ -343,20 +343,40 @@ void deleteFile(char* name)
     char map[512];
     char directory[512];
     char* file;
-    int j, index;
+    int i, j, index, cnt;
 
     readSector( map, 1 );
     readSector( directory, 2 );
 
+    cnt = 0;
+    for( i = 0; i < 512; ++i )
+    {
+	if( map[i] != 0x00 )
+	    ++cnt;
+    }
+    interrupt( 33, 13, cnt, 0, 0 );
+    interrupt( 33, 0, " bits in map\n\r\0", 0, 0 );
+
     file = locate_file( directory, name );
+    index = file_index( directory, name );
     if( !file )
     {
 	interrupt( 33, 0, "\r\nError: File Not Found\n\0", 0, 0 );	
     }
     else
     {
+	interrupt( 33, 13, map[index], 0, 0 );
+	interrupt( 33, 0, " at map[\0", 0, 0 );
+	interrupt( 33, 13, index, 0, 0 );
+	interrupt( 33, 0, "]\r\n\0", 0, 0 );
 	/* set the first bit of the filename to 0 */
+	interrupt( 33, 0, file, 0, 0 );
+	interrupt( 33, 0, "\r\n\0", 0, 0 );
 	*file = 0;
+	interrupt( 33, 0, file, 0, 0 );
+	interrupt( 33, 0, "\r\n\0", 0, 0 );
+	map[index] = 0;
+	++index;
 
 	/* beginning at the end of the filename (byte 6), loop through any */
 	/* sectors that may belong to the file */
@@ -366,7 +386,21 @@ void deleteFile(char* name)
 	    map[index] = 0;
 	    /* if we have reached an empty or deleted sector, return */
             if(*(file+j) == 0)
+	    {
+		cnt = 0;
+		for( i = 0; i < 512; ++i )
+		{
+		    if( map[i] != 0x00 )
+			++cnt;
+		}
+		interrupt( 33, 13, cnt, 0, 0 );
+		interrupt( 33, 0, " bits in map\n\r\0", 0, 0 );
+		interrupt( 33, 13, map[index], 0, 0 );
+		interrupt( 33, 0, " at map[\0", 0, 0 );
+		interrupt( 33, 13, index, 0, 0 );
+		interrupt( 33, 0, "]\r\n\0", 0, 0 );
                 return;	  
+	    }
 	    ++index;
         }
         return;    
