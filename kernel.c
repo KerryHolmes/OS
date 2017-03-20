@@ -407,6 +407,49 @@ void deleteFile(char* name)
     }    
 }
 
+int findSpace(char* directory, char* name)
+{
+    int i = 0;
+    int freeSpace = 0;
+    for(; i < 16; ++i)
+    {
+        if( *(directory + i * 32) == '0')
+            freeSpace = i;
+        if(lex_compare(name, (directory + i * 32))
+            return 0; 
+    }
+}
+
+void writeFile(char* name, char* buffer, int numberOfSectors)
+{
+
+   char map[512];
+   char directory[512];
+   char* file;
+   int i,j, index;
+
+   readSector( map, 1);
+   readSector( directory, 2);
+   
+   file = findSpace( directory, name);
+   if(!file)
+   { 
+       interrupt(33, 15, 1, 0,0);
+       return;
+   }
+   
+   for(i = 0; i < 6; ++i)
+      *(directory + i + 32 * file) = '0';
+
+   for(i = 0; i < 6; ++i)
+      {
+          if(*(name + i) == '0')
+               break;
+          *(directory + i + 32 * file) = *(name + i);
+      }
+
+}
+
 /*This handler takes in arguments for ax, bx, cx, and dx
 then it switches on the function defined by ax and executes 
 the corresponding function. 0 prints a string, 1 reads a 
