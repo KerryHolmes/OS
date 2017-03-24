@@ -373,17 +373,16 @@ void deleteFile(char* name)
 	interrupt( 33, 0, file, 0, 0 );
 	interrupt( 33, 0, "\r\n\0", 0, 0 );
 	*file = 0;
+	writeSector(directory, 2);
 	interrupt( 33, 0, file, 0, 0 );
 	interrupt( 33, 0, "\r\n\0", 0, 0 );
-	map[index] = 0;
-	++index;
 
 	/* beginning at the end of the filename (byte 6), loop through any */
 	/* sectors that may belong to the file */
         for(j = 6; j < 31; ++j)
         {
 	    /* remove the corresponding sectors from disk */
-	    map[index] = 0;
+	    map[directory[index*32 + j]] = 0;
 	    /* if we have reached an empty or deleted sector, return */
             if(*(file+j) == 0)
 	    {
@@ -399,10 +398,11 @@ void deleteFile(char* name)
 		interrupt( 33, 0, " at map[\0", 0, 0 );
 		interrupt( 33, 13, index, 0, 0 );
 		interrupt( 33, 0, "]\r\n\0", 0, 0 );
+		writeSector(map, 1);
                 return;	  
 	    }
-	    ++index;
         }
+	writeSector(map, 1);
         return;    
     }    
 }
@@ -415,7 +415,7 @@ int findSpace(char* directory, char* name)
     {
         if( *(directory + i * 32) == '0')
             freeSpace = i;
-        if(lex_compare(name, (directory + i * 32))
+        if(lex_compare(name, (directory + i * 32)))
             return 0; 
     }
 }
@@ -425,7 +425,7 @@ void writeFile(char* name, char* buffer, int numberOfSectors)
 
    char map[512];
    char directory[512];
-   char* file;
+   int file;
    int i,j, index;
 
    readSector( map, 1);
@@ -491,7 +491,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     case 7:
         deleteFile(bx);
         break;
-/*
+
     case 8:
         writeFile(bx,cx,dx);
         break;
@@ -499,7 +499,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
     case 11:
         interrupt(25,0,0,0,0);
         break;
-*/
+
     case 12:
         clearScreen(bx,cx);
         break;

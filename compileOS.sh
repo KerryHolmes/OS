@@ -14,7 +14,7 @@ dd if=dir.img of=floppya.img bs=512 count=1 seek=2 conv=notrunc
 ./loadFile test1
 ./loadFile test2
 
-#Compile and add fib and calc programs
+#Compile and add shell, fib and calc programs
 bcc -ansi -c -o fib.o fib.c
 as86 lib.asm  -o lib_asm.o
 ld86 -o fib -d fib.o lib_asm.o
@@ -23,6 +23,10 @@ ld86 -o fib -d fib.o lib_asm.o
 bcc -ansi -c -o cal.o cal.c
 ld86 -o cal -d cal.o lib_asm.o 
 ./loadFile cal
+
+bcc -ansi -c -o Shell.o Shell.c
+ld86 -o shell -d Shell.o lib_asm.o
+./loadFile shell
 
 #This will compile the bootloader and write the
 #compiled bootloader into the floppy disk image
