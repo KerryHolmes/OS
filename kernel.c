@@ -49,15 +49,18 @@ void main()
     interrupt(33,0,buffer,0,0);  
 */
     /*Get test program from the user*/
-    interrupt(33,0,"Enter a file name (Max 6 characters): \0",0,0);
+    /*interrupt(33,0,"Enter a file name (Max 6 characters): \0",0,0);
     interrupt(33,1, file, 0, 0);
     interrupt(33,0,"\r\n\0",0,0);
-    
-    interrupt( 33, 7, file, 0, 0 );
+    */
     /* Run the program. */
-    interrupt(33,4,file,2,0);
+   /* interrupt(33,4,file,2,0);
     interrupt(33,0,"Error if this executes\r\n\0",0,0);
-     
+   
+    while(1);*/
+
+    interrupt(33, 4, "Shell\0",2,0);
+    interrupt(33,0,"Bad or missing command interpreter.\r\n\0",0,0);
     while(1);
 }
 
@@ -326,7 +329,7 @@ void runProgram(char* name, int segment)
 }
 
 /*This function was provided by Dr. Oneil.*/
-void stop() { while(1); }
+void stop() { launchProgram(8192); }
 
 /**/
 void writeSector(char* buffer, int sector)
@@ -407,7 +410,7 @@ void deleteFile(char* name)
     }    
 }
 
-int findSpace(char* directory, char* name)
+int findEntry(char* directory, char* name)
 {
     int i = 0;
     int freeSpace = 0;
@@ -422,32 +425,55 @@ int findSpace(char* directory, char* name)
 
 void writeFile(char* name, char* buffer, int numberOfSectors)
 {
-
+   char temp_buffer[512];
    char map[512];
    char directory[512];
    int file;
-   int i,j, index;
+   int i,j,l,index;
 
    readSector( map, 1);
    readSector( directory, 2);
    
-   file = findSpace( directory, name);
+   file = findEntry( directory, name);
    if(!file)
    { 
-       interrupt(33, 15, 1, 0,0);
+       interrupt(33, 15, 2, 0,0);
        return;
    }
    
    for(i = 0; i < 6; ++i)
-      *(directory + i + 32 * file) = '0';
+      *(directory + i + 32 * file) = '\0';
 
    for(i = 0; i < 6; ++i)
       {
-          if(*(name + i) == '0')
+          if(*(name + i) == '\0')
                break;
           *(directory + i + 32 * file) = *(name + i);
       }
+   index = 0;
+   j = 6;
+   for(i = 0; i < numberOfSectors; ++i)
+   {
+       for(; index < 512; ++index)
+           if(*(map + index) == 0)
+	       break;
+       if(index == 511 && *(map + index) != 0)
+       {
+           interrupt(33,15,2,0,0);
+           return;
+       }
 
+       *(map + index) = 255;
+       *(directory + j++) = index;
+       for(l = 0; l < 512; l++)
+	   temp_buffer[l] = buffer[l + 512 * i];
+       writeSector(temp_buffer, index);
+   }
+   for(i = numberOfSectors; i < 26; ++i)
+       *(directory + i + 32 * file) = '\0';
+
+   writeSector(directory, 2);
+   writeSector(map,1);
 }
 
 /*This handler takes in arguments for ax, bx, cx, and dx

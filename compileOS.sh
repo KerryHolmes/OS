@@ -25,8 +25,8 @@ ld86 -o cal -d cal.o lib_asm.o
 ./loadFile cal
 
 bcc -ansi -c -o Shell.o Shell.c
-ld86 -o shell -d Shell.o lib_asm.o
-./loadFile shell
+ld86 -o Shell -d Shell.o lib_asm.o
+./loadFile Shell
 
 #This will compile the bootloader and write the
 #compiled bootloader into the floppy disk image
