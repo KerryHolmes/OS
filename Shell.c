@@ -88,6 +88,7 @@ int main()
 	    for(i = 0; i < file; ++i)
                 *(filename + i) = *(input + position + i + 1);
 	    PRINTS(filename);
+	    PRINTS( "\r\n\0" );
 	    interrupt(33,7,filename,0,0);
 	    continue;
 	}
@@ -122,8 +123,7 @@ int main()
 	    {
 		for( i = 0; i < file; ++i )
 		    *(filename + i) = *(input + position + i + 1);
-		PRINTS( filename );
-		interrupt(33,4,filename,0,0);
+		RUN( filename, 2 );
 	    }
             continue;
 	}
