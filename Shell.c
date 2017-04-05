@@ -107,10 +107,26 @@ int main()
 	    PRINTS( "run <filename> - run executable file\r\n\0" );
 	    PRINTS( "tweet <filename> create a text file\r\n\0" );
 	    PRINTS( "type <filename> print out the contents of a file\r\n\0" );
+            continue;
 	}
-            continue;
 	if(lex(command, "run\0"))
+	{
+	    int file;
+	    char filename[6];
+	    for( i = 0; i < 6; ++i )
+		*(filename + i) = '\0';
+	    file = str_find( input, '\0', position + 1 );
+	    if( file == -1 )
+		PRINTS( "Error: file not found\r\n\0" );
+	    else
+	    {
+		for( i = 0; i < file; ++i )
+		    *(filename + i) = *(input + position + i + 1);
+		PRINTS( filename );
+		interrupt(33,4,filename,0,0);
+	    }
             continue;
+	}
 	if(lex(command, "tweet\0"))
             continue;
 	if(lex(command, "type\0"))
