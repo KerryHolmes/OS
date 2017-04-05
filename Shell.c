@@ -96,6 +96,18 @@ int main()
 	if(lex(command, "echo\0"))
             continue;
 	if(lex(command, "help\0"))
+	{
+	    PRINTS( "boot - reboot the system\r\n\0" );
+	    PRINTS( "cls - clear screen\r\n\0" );
+	    PRINTS( "copy <file1> <file2> - copy file1 into file 2\r\n\0" );
+	    PRINTS( "del <filename> - delete a file\r\n\0" );
+	    PRINTS( "dir - list disk directory contents\r\n\0" );
+	    PRINTS( "echo <comment> display a comment\r\n\0" );
+	    PRINTS( "help - display this prompt\r\n\0" );
+	    PRINTS( "run <filename> - run executable file\r\n\0" );
+	    PRINTS( "tweet <filename> create a text file\r\n\0" );
+	    PRINTS( "type <filename> print out the contents of a file\r\n\0" );
+	}
             continue;
 	if(lex(command, "run\0"))
             continue;
