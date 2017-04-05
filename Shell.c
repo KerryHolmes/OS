@@ -95,7 +95,28 @@ int main()
 	if(lex(command, "dir\0"))
             continue;	
 	if(lex(command, "echo\0"))
+	{
+	    /* check if everything after "echo " is empty */
+	    for( i = 5; i < sizeof( input ); ++i )
+	    {
+		/* if something is not whitespace, the string is not empty */
+		if( *( input + i ) != ' ' 
+		    || *( input + i ) != '\0'
+		    || *( input + i ) != '\n'
+		    || *( input + i ) != '\t' )
+		    break;
+		/* otherwise, print a new line */
+		else
+		    PRINTS( "\r\n\0" );
+	    }
+	    else
+	    {
+		/* print everything after "echo " */
+		PRINTS( input + 4 );
+		PRINTS( "\r\n\0" );
+	    }
             continue;
+	}
 	if(lex(command, "help\0"))
 	{
 	    PRINTS( "boot - reboot the system\r\n\0" );
