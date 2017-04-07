@@ -5,3 +5,4 @@
 #define CLEAR     interrupt(33,12,8,10,0)
 #define RUN(x, y) interrupt(33,4,x,y,0)
 #define END       interrupt(33,5,0,0,0)
+#define READSEC(x, y)   interrupt(33,2, &x, y, 0 );
