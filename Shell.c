@@ -49,14 +49,24 @@ int main()
 
 	    file1 = str_find(input, ' ', position+1);
 	    if(file1  == -1)
+	    {
 		PRINTS("Error file 1 missing\r\n\0");
-	    
+	        continue;
+	    }
 	    file2 = str_find(input, ' ', file1+1);
 	    if(file2  == -1)
 	    {
 		file2 = str_find(input, '\0', file1+1);
 		if(file2 == -1)
+	        {
                     PRINTS("Error file 2 missing\r\n\0");
+		    continue;
+		}
+		if(*(input + file1 + 1) < 'a')
+                {
+                PRINTS("duplicate or invalid filename\0");
+                continue;
+                }
 	    }
 
 	    for(j = 0, i = position + 1; i < file1 && j < 6; ++i, ++j)
@@ -82,7 +92,17 @@ int main()
 	        *(filename + i) = '\0';
             file = str_find(input, '\0', position+1);
             if(file  == -1)
+	    {
                 PRINTS("Error file missing\r\n\0");
+		continue;
+	    }
+
+	    if(*(input + position + 1) < 'a')
+            {
+                PRINTS("duplicate or invalid filename\r\n\0");
+                continue;
+            }
+
 	    for(i = 0; i < file; ++i)
                 *(filename + i) = *(input + position + i + 1);
 	    PRINTS(filename);
@@ -179,6 +199,7 @@ int main()
 	    file = str_find( input, '\0', position + 1 );
 	    if( file == -1 )
 		PRINTS( "Error: file not found\r\n\0" );
+               
 	    else
 	    {
 		for( i = 0; i < file; ++i )
@@ -188,7 +209,36 @@ int main()
             continue;
 	}
 	if(lex(command, "tweet\0"))
+	{
+	    char buffer[140], filename[6];
+	    int file;
+
+            for(i = 0; i < 6; ++i)
+                *(filename + i) = '\0';
+
+            file = str_find(input, '\0', position+1);
+            if(file  == -1)
+	    {
+                PRINTS("Error file missing\r\n\0");
+		continue;
+	    }
+
+	    if(*(input + position + 1) < 'a')
+	    {
+		PRINTS("duplicate or invalid filename\r\n\0");
+		continue;
+	    }
+
+            for(i = 0; i < file; ++i)
+                *(filename + i) = *(input + position + i + 1);
+
+	    PRINTS("Input a string less that 140 characters long\r\n\0");
+	    SCANS(buffer);
+	    interrupt(33, 8, filename, buffer, 1);
+	    PRINTS("\r\n\0");
+
             continue;
+	}
 	if(lex(command, "type\0"))
             continue;
 
