@@ -109,12 +109,11 @@ int main()
 		else
 		    PRINTS( "\r\n\0" );
 	    }
-	    else
-	    {
+	  
 		/* print everything after "echo " */
 		PRINTS( input + 4 );
 		PRINTS( "\r\n\0" );
-	    }
+	    
             continue;
 	}
 	if(lex(command, "help\0"))

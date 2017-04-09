@@ -61,7 +61,8 @@ void main()
 
     interrupt(33, 4, "Shell\0",2,0);
     interrupt(33,0,"Bad or missing command interpreter.\r\n\0",0,0);
-    while(1);
+
+  while(1);
 }
 
 /*This function will output a string onto the screen. 
@@ -208,6 +209,7 @@ void error(int bx)
    errMsg3[12] = 114; errMsg3[13] = 46; errMsg3[14] = 13; errMsg3[15] = 10;
    errMsg3[16] = 0;
 
+
    switch(bx) {
    case 0: printString(errMsg0); break;
    case 1: printString(errMsg1); break;
@@ -299,8 +301,14 @@ void readFile(char* fname, char* buffer, int* size)
         for(j = 6; j < 31; ++j)
         {
             if(*(file+j) == 0)
+	{
+interrupt(33,13,*(file+j),0,0);
+interrupt(33, 0, "Break\r\n\0", 0, 0);
                 return;
+}
             readSector(position,*(file + j));
+	    interrupt(33,13,*(file + j),0,0);
+	    interrupt(33, 0, "\r\n\0", 0, 0);
             *size += 1;
             position += 512;
         }
@@ -413,14 +421,18 @@ void deleteFile(char* name)
 int findEntry(char* directory, char* name)
 {
     int i = 0;
-    int freeSpace = 0;
+    int freeSpace = -1;
+    
     for(; i < 16; ++i)
     {
-        if( *(directory + i * 32) == '0')
-            freeSpace = i;
+        if( *(directory + i * 32) == '\0')
+		 freeSpace = i;
+		
         if(lex_compare(name, (directory + i * 32)))
-            return 0; 
+		return 0; 
     }
+
+    return freeSpace;
 }
 
 void writeFile(char* name, char* buffer, int numberOfSectors)
@@ -430,47 +442,57 @@ void writeFile(char* name, char* buffer, int numberOfSectors)
    char directory[512];
    int file;
    int i,j,l,index;
-
+	
    readSector( map, 1);
    readSector( directory, 2);
    
    file = findEntry( directory, name);
    if(!file)
    { 
-       interrupt(33, 15, 2, 0,0);
+       interrupt(33, 15, 1, 0,0);
        return;
    }
-   
-   for(i = 0; i < 6; ++i)
-      *(directory + i + 32 * file) = '\0';
+
+   if(file == -1)
+   {
+	interrupt(33, 15, 2, 0, 0);
+	return;
+   }
 
    for(i = 0; i < 6; ++i)
-      {
+   {
           if(*(name + i) == '\0')
                break;
+
           *(directory + i + 32 * file) = *(name + i);
-      }
+   }
+
+   for(; i < 6; ++i)
+      *(directory + i + 32 * file) = '\0';
+
    index = 0;
    j = 6;
    for(i = 0; i < numberOfSectors; ++i)
    {
        for(; index < 512; ++index)
-           if(*(map + index) == 0)
+           if(*(map + index) == '\0')
 	       break;
-       if(index == 511 && *(map + index) != 0)
+       if(index == 511 && *(map + index) != '\0')
        {
            interrupt(33,15,2,0,0);
            return;
        }
 
        *(map + index) = 255;
-       *(directory + j++) = index;
+       *(directory + (j++) + 32 * file) = index;
        for(l = 0; l < 512; l++)
 	   temp_buffer[l] = buffer[l + 512 * i];
+
        writeSector(temp_buffer, index);
    }
-   for(i = numberOfSectors; i < 26; ++i)
-       *(directory + i + 32 * file) = '\0';
+
+   for(; i < 26; ++i, ++j)
+       *(directory + j + 32 * file) = '\0';
 
    writeSector(directory, 2);
    writeSector(map,1);
