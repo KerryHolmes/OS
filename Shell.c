@@ -59,17 +59,15 @@ int main()
                     PRINTS("Error file 2 missing\r\n\0");
 	    }
 
-	    for(i = 0; i < 6; ++i)
-                *(file2n + i) = '\0';
-
-	    for(i = 0; i < 6; ++i)
-                *(file1n + i) = '\0';
-
-	    for(j = 0, i = position + 1; i < file1; ++i, ++j)
+	    for(j = 0, i = position + 1; i < file1 && j < 6; ++i, ++j)
                 *(file1n + j) = *(input + i);
+	    for(; j < 6; ++j)
+		*(file1n + j) = '\0';
 
-	    for(j = 0, i = file1 + 1; i < file2; ++i, ++j)
+	    for(j = 0, i = file1 + 1; i < file2 && j < 6; ++i, ++j)
                 *(file2n + j) = *(input + i);
+	    for(; j < 6; ++j)
+                *(file2n + j) = '\0';
 
 	    interrupt(33,3,file1n,buffer,&size);
 	    interrupt(33,8,file2n,buffer,size);
@@ -93,7 +91,49 @@ int main()
 	    continue;
 	}
 	if(lex(command, "dir\0"))
+	{
+	    char directory[512], name[7];
+	    int i, j, size, total = 0;
+	    interrupt(33, 2, directory, 2, 0);
+	    for(i = 0; i < 6; ++i)
+		*(name + i) = '\0';
+
+	    for(i = 0; i < 16; ++i)
+	    {
+		size = 0;
+		if(*(directory + i * 32) == '\0')
+		    continue;
+		for(j = 6; j < 32; ++j)
+                {
+                    if(*(directory + j + i * 32) == '\0')
+                        break;
+                    size++;
+                }
+		
+		total += size;
+
+		if(*(directory + i * 32) > 'a')
+		{
+		    for(j = 0; j < 6; ++j)
+			*(name + j) = *(directory + j + i * 32);
+		    
+		    PRINTS(name);
+		    PRINTS("  Size: \0");
+		    PRINTN(size);
+		    PRINTS("\r\n\0");
+		}
+	    }
+	
+	    PRINTS("Total space used: \0");
+	    PRINTN(total);
+	    PRINTS("\r\n\0");
+
+	    PRINTS("Total space available: \0");
+	    PRINTN(256 - total);
+	    PRINTS("\r\n\0");
+
             continue;	
+	}
 	if(lex(command, "echo\0"))
 	{
 	    /* check if everything after "echo " is empty */
@@ -111,7 +151,7 @@ int main()
 	    }
 	  
 		/* print everything after "echo " */
-		PRINTS( input + 4 );
+		PRINTS( input + 5 );
 		PRINTS( "\r\n\0" );
 	    
             continue;

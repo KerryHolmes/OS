@@ -301,11 +301,8 @@ void readFile(char* fname, char* buffer, int* size)
         for(j = 6; j < 31; ++j)
         {
             if(*(file+j) == 0)
-	{
-interrupt(33,13,*(file+j),0,0);
-interrupt(33, 0, "Break\r\n\0", 0, 0);
                 return;
-}
+
             readSector(position,*(file + j));
 	    interrupt(33,13,*(file + j),0,0);
 	    interrupt(33, 0, "\r\n\0", 0, 0);
