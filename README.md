@@ -43,3 +43,6 @@ this command to launch the OS or you can run the command below.
 ```
 bochs -f osxterm.txt
 ```
+
+The OS will boot into a shell prompt. For a list of avaiable commands, you can type `help`
+into the shell.
