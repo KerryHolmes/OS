@@ -65,7 +65,7 @@ int main()
 		}
 		if(*(input + file1 + 1) < 'a')
                 {
-                PRINTS("duplicate or invalid filename\0");
+                PRINTS("duplicate or invalid filename\r\n\0");
                 continue;
                 }
 	    }
