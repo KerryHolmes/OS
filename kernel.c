@@ -85,28 +85,26 @@ stored, but the current position in the character array is moved backwards.*/
 void readString(char* c)
 {
     int i = 0;
-    while(1)
+    char current;
+    
+    do
     {
-        char raw = interrupt(22,0,0,0,0);
-        if(raw == 13)
-        {
-            *(c+i) = '\0';
-            return;
-        }
-        
-        else if(raw == 8)
-        {
-            if(i > 0)
-                i-=2;
-        }
-        
-        else
-        {
-            *(c+i) = raw;
-            i++;
-        }
-        interrupt(16, 14*256+raw,0,0,0);
-    }
+	/* interrupt 22 accepts a single keystroke and stores it in current */
+	current = interrupt( 22, 0, 0, 0, 0 );
+	/* print the inputted character with interrupt 16 */
+	interrupt( 16, 14*256+current, 0, 0, 0 );
+	*(c + i) = current;
+
+	/* if BACKSPACE is pressed, decrement unless at beginning of string */
+	if( current == 0x8 )
+	{
+	    if( i > 0 )
+		--i;
+	}
+	else
+	    ++i;
+    } while( current != 0xD ); /*continue until ENTER is pressed */
+    *(c + (i - 1)) = '\0';
     return;
 }
 /*This function will issue 24 carriage return/newline 
