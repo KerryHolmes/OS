@@ -142,6 +142,7 @@ int div(int a, int b)
     return (q - 1);
 }
 
+/*Writes an integer to the screen*/
 void writeInt(int x)
 {
     char number[6], *d;
@@ -265,6 +266,7 @@ int locate_file(char* directory, char* name)
     return 0;
 }
 
+/*Returns the directory position of a file (0 - 15)*/
 int file_index(char* directory, char* name)
 {
     int i;
@@ -335,7 +337,8 @@ void runProgram(char* name, int segment)
 /*This function was provided by Dr. Oneil.*/
 void stop() { launchProgram(8192); }
 
-/**/
+/*Writes the contents of buffer into the specified
+  sector.*/
 void writeSector(char* buffer, int sector)
 {
     int relSecNo = mod(sector, 18) + 1;
@@ -345,6 +348,9 @@ void writeSector(char* buffer, int sector)
     interrupt(19, 769, buffer, (trackNo * 256) + relSecNo, headNo * 256);
 }
 
+/*Sets the first bit of the file name to 0 and then
+  iterates through the map marking every sector for this file
+  as free.*/
 void deleteFile(char* name)
 {
     char map[512];
@@ -399,6 +405,7 @@ void deleteFile(char* name)
     }    
 }
 
+/*Searches for a free space in the directory, to put a new file*/
 int findEntry(char* directory, char* name)
 {
     int i = 0;
@@ -416,6 +423,8 @@ int findEntry(char* directory, char* name)
     return freeSpace;
 }
 
+/*Writes a file from a buffer onto the disk. It updates the
+  directory and map to indicate the file is present.*/
 void writeFile(char* name, char* buffer, int numberOfSectors)
 {
    char temp_buffer[512];
