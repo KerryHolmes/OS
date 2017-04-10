@@ -204,7 +204,7 @@ int main()
 	    {
 		for( i = 0; i < file; ++i )
 		    *(filename + i) = *(input + position + i + 1);
-		RUN( filename, 2 );
+		RUN( filename, 4 );
 	    }
             continue;
 	}
@@ -232,7 +232,7 @@ int main()
             for(i = 0; i < file; ++i)
                 *(filename + i) = *(input + position + i + 1);
 
-	    PRINTS("Input a string less that 140 characters long\r\n\0");
+	    PRINTS("Input a string less than 140 characters long\r\n\0");
 	    SCANS(buffer);
 	    interrupt(33, 8, filename, buffer, 1);
 	    PRINTS("\r\n\0");
@@ -240,7 +240,36 @@ int main()
             continue;
 	}
 	if(lex(command, "type\0"))
+	{
+	    char buffer[512], filename[6];
+	    int file, filesize;
+	    
+            for(i = 0; i < 6; ++i)
+                *(filename + i) = '\0';
+
+            file = str_find(input, '\0', position+1);
+            if(file  == -1)
+	    {
+                PRINTS("Error file missing\r\n\0");
+		continue;
+	    }
+	    else
+	    {
+		for( i = 0; i < file; ++i )
+		    *(filename + i) = *(input + position + i + 1);
+		interrupt( 33, 3, filename, buffer, filesize );
+		for( i = 0; i < 512; ++i )
+		{
+		    if( buffer[i] == '\0' )
+			break;
+			
+		    interrupt( 33, 0, buffer[i], 0, 0 );
+		}
+	    }
+	    
+
             continue;
+	}
 
 	PRINTS("Command not recognized. Type help to see commands\r\n\0");
     }
