@@ -303,9 +303,6 @@ void readFile(char* fname, char* buffer, int* size)
             if(*(file+j) == 0)
                 return;
 
-            readSector(position,*(file + j));
-	    interrupt(33,13,*(file + j),0,0);
-	    interrupt(33, 0, "\r\n\0", 0, 0);
             *size += 1;
             position += 512;
         }
@@ -362,8 +359,6 @@ void deleteFile(char* name)
 	if( map[i] != 0x00 )
 	    ++cnt;
     }
-    interrupt( 33, 13, cnt, 0, 0 );
-    interrupt( 33, 0, " bits in map\n\r\0", 0, 0 );
 
     file = locate_file( directory, name );
     index = file_index( directory, name );
@@ -373,17 +368,9 @@ void deleteFile(char* name)
     }
     else
     {
-	interrupt( 33, 13, map[index], 0, 0 );
-	interrupt( 33, 0, " at map[\0", 0, 0 );
-	interrupt( 33, 13, index, 0, 0 );
-	interrupt( 33, 0, "]\r\n\0", 0, 0 );
 	/* set the first bit of the filename to 0 */
-	interrupt( 33, 0, file, 0, 0 );
-	interrupt( 33, 0, "\r\n\0", 0, 0 );
 	*file = 0;
 	writeSector(directory, 2);
-	interrupt( 33, 0, file, 0, 0 );
-	interrupt( 33, 0, "\r\n\0", 0, 0 );
 
 	/* beginning at the end of the filename (byte 6), loop through any */
 	/* sectors that may belong to the file */
@@ -400,12 +387,7 @@ void deleteFile(char* name)
 		    if( map[i] != 0x00 )
 			++cnt;
 		}
-		interrupt( 33, 13, cnt, 0, 0 );
-		interrupt( 33, 0, " bits in map\n\r\0", 0, 0 );
-		interrupt( 33, 13, map[index], 0, 0 );
-		interrupt( 33, 0, " at map[\0", 0, 0 );
-		interrupt( 33, 13, index, 0, 0 );
-		interrupt( 33, 0, "]\r\n\0", 0, 0 );
+
 		writeSector(map, 1);
                 return;	  
 	    }
