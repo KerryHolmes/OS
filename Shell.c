@@ -10,8 +10,6 @@ int main()
     char input[300];
     char command[6];
 
-    CLEAR;
-
     while(1)
     {
 	PRINTS("blackdos~(_^>\0");
@@ -30,11 +28,14 @@ int main()
 	    *(command + i) = *(input + i);
 
         if(lex(command, "boot\0"))
+	{
+	    CLEAR;
 	    interrupt(33,11,0,0,0);
-
+	}
+	    
 	if(lex(command, "cls\0"))
 	{
-	    interrupt(33,12,8,10,0);
+	    CLEAR;
 	    continue;
 	}
 
@@ -105,8 +106,6 @@ int main()
 
 	    for(i = 0; i < file; ++i)
                 *(filename + i) = *(input + position + i + 1);
-	    PRINTS(filename);
-	    PRINTS( "\r\n\0" );
 	    interrupt(33,7,filename,0,0);
 	    continue;
 	}
