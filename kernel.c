@@ -302,7 +302,9 @@ void readFile(char* fname, char* buffer, int* size)
         {
             if(*(file+j) == 0)
                 return;
-
+		
+	    readSector(position,*(file + j));
+		
             *size += 1;
             position += 512;
         }
