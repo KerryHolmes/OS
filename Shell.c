@@ -246,6 +246,8 @@ int main()
 	    
             for(i = 0; i < 6; ++i)
                 *(filename + i) = '\0';
+	    for( i = 0; i < 512; ++i )
+		*( buffer + i ) = '\0';
 
             file = str_find(input, '\0', position+1);
             if(file  == -1)
@@ -258,13 +260,9 @@ int main()
 		for( i = 0; i < file; ++i )
 		    *(filename + i) = *(input + position + i + 1);
 		interrupt( 33, 3, filename, buffer, filesize );
-		for( i = 0; i < 512; ++i )
-		{
-		    if( buffer[i] == '\0' )
-			break;
-			
-		    interrupt( 33, 0, buffer[i], 0, 0 );
-		}
+		interrupt( 33, 0, "\r\n\0", 0, 0 );
+		interrupt( 33, 0, buffer, 0, 0 );
+		interrupt( 33, 0, "\r\n\0", 0, 0 );
 	    }
 	    
 
