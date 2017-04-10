@@ -259,7 +259,6 @@ int main()
 		for( i = 0; i < file; ++i )
 		    *(filename + i) = *(input + position + i + 1);
 		interrupt( 33, 3, filename, buffer, filesize );
-		interrupt( 33, 0, "\r\n\0", 0, 0 );
 		interrupt( 33, 0, buffer, 0, 0 );
 		interrupt( 33, 0, "\r\n\0", 0, 0 );
 	    }
